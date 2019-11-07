@@ -18,7 +18,7 @@ public class SimpleShell {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args){
         boolean stay = true;
         while (stay) {
             try {
