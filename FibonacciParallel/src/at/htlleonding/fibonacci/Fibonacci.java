@@ -1,3 +1,5 @@
+// Eichhorn Moritz
+
 /*
  * Copyright ©2015. Created by P. Bauer <p.bauer@htl-leonding.ac.at>, Department
  * of Informatics and Media Technique and Design, HTBLA Leonding, Limesstr. 12 - 14,
@@ -27,17 +29,50 @@ package at.htlleonding.fibonacci;
  *
  * @author P. Bauer <p.bauer@htl-leonding.ac.at>
  */
-class Fibonacci {
+class Fibonacci extends Thread {
+
+    private int n;
+    public int result;
+
+    public Fibonacci(int n) {
+        this.n = n;
+    }
 
     static int getNumberSingle(int n) {
-        if (n < 2)
+        if (n < 2) {
             return 1;
-        else
+        } else {
             return getNumberSingle(n - 1) + getNumberSingle(n - 2);
+        }
     }
 
     static int getNumberParallel(int n) {
+        try {
+            Fibonacci fib = new Fibonacci(n);
+            fib.start();
+            fib.join();
+            return fib.result;
+        } catch (Exception ex) {
+            System.out.println("Ups! Something went wrong!");
+        }
         return -1;
     }
-    
+
+    public void run() {
+        if (this.n < 2) {
+            result = 1;
+        } else {
+            try {
+                Fibonacci fib1 = new Fibonacci(this.n - 1);
+                Fibonacci fib2 = new Fibonacci(this.n - 2);
+                fib1.start();
+                fib2.start();
+                fib1.join();
+                fib2.join();
+                result = fib1.result + fib2.result;
+            } catch (Exception ex) {
+                System.out.println("Ups! Something went wrong!");
+            }
+        }
+    }
 }
