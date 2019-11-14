@@ -12,8 +12,8 @@ int get_next_position(char* input);
 int main() {
     int status;
     char **command;
-    char input[64];
-    char inputCpy[64];
+    char input[512];
+    char inputCpy[512];
     char* part;
     char del[2] = "&";
     
@@ -28,6 +28,7 @@ int main() {
             waitpid(-1, &status, 0);
             strcpy(input, inputCpy);
             strcpy(inputCpy, inputCpy + get_next_position(inputCpy));
+            
             part = strtok(input, del);
             
         } else {
@@ -63,5 +64,5 @@ int get_next_position(char* input) {
             return i + 1;
         }
     }
-    return -1;
+    return strlen(input);
 }
