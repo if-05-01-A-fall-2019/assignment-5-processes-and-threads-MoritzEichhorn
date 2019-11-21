@@ -25,15 +25,17 @@
  */
 package at.htlleonding.fibonacci;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 /**
  *
  * @author P. Bauer <p.bauer@htl-leonding.ac.at>
  */
-class Fibonacci extends Thread {
+class Fibonacci{
 
     private int n;
-    public int result;
-
     public Fibonacci(int n) {
         this.n = n;
     }
@@ -46,33 +48,29 @@ class Fibonacci extends Thread {
         }
     }
 
-    static int getNumberParallel(int n) {
+    static int getNumberParallel(int n)  {
+        /*
+        On my PC, when I only execute the tests and use getNumberSingle(), it takes 4.646 Seconds to finish.
+        But when I run the tests using getNumberParallel it only takes 2.894 Seconds. So getNumberParallel
+        is a lot faster.
+        It's faster, because two threads are working at the same time. And together they are faster than 
+        a single thread.
+        */
+        if(n < 2) {
+            return 1;
+        }
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        
+        Future<Integer> int1 = executorService.submit(new FibonacciCalculator(n-1));
+        Future<Integer> int2 = executorService.submit(new FibonacciCalculator(n-2));
+        int fib;
         try {
-            Fibonacci fib = new Fibonacci(n);
-            fib.start();
-            fib.join();
-            return fib.result;
-        } catch (Exception ex) {
-            System.out.println("Ups! Something went wrong!");
+            fib =  int1.get() + int2.get();
+        } catch (Exception e) {
+            throw new RuntimeException("Ups something went wrong!");
         }
-        return -1;
-    }
-
-    public void run() {
-        if (this.n < 2) {
-            result = 1;
-        } else {
-            try {
-                Fibonacci fib1 = new Fibonacci(this.n - 1);
-                Fibonacci fib2 = new Fibonacci(this.n - 2);
-                fib1.start();
-                fib2.start();
-                fib1.join();
-                fib2.join();
-                result = fib1.result + fib2.result;
-            } catch (Exception ex) {
-                System.out.println("Ups! Something went wrong!");
-            }
-        }
+        
+        executorService.shutdown();
+        return fib;
     }
 }
